@@ -1,6 +1,6 @@
 {
-  "name": "nodejs-apig",
-  "version": "1.0.0",
+  "name": "itudict-backend",
+  "version": "0.0.1",
   "private": true,
   "devDependencies": {
     "aws-sdk": "2.814.0"
