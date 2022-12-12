@@ -7,11 +7,6 @@ import { UserService } from './user.service';
 export class UserController {
   constructor(private readonly userService: UserService) {}
 
-  @Post('login')
-  login(@Body() loginUserDto: LoginUserDto) {
-    return this.userService.login(loginUserDto);
-  }
-
   @Post('register')
   register(@Body() user: CreateUserDto) {
     console.log(user);

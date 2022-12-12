@@ -1,24 +1,23 @@
 import { Injectable } from '@nestjs/common';
 import { LoginUserDto } from './dto/login-user.dto';
-import { User } from './interfaces/user.interface';
+import { CreateUserDto } from './dto/create-user.dto';
+import { InjectModel } from '@nestjs/mongoose';
+import { Model } from 'mongoose';
+import { User, UserDocument } from './schemas/user.schema';
+import { forwardRef } from '@nestjs/common';
+import { Inject } from '@nestjs/common';
 
 @Injectable()
 export class UserService {
-  private readonly users: User[] = [];
+  constructor(@InjectModel(User.name) private userModel: Model<UserDocument>) {}
 
-  create(user: User) {
-    this.users.push(user);
-    console.log(this.users);
+  async create(createUserDto: CreateUserDto): Promise<User> {
+    const createdUser = new this.userModel(createUserDto);
+    await createdUser.save();
+    return createdUser;
   }
 
-  findAll(): User[] {
-    return this.users;
-  }
-
-  login(user: LoginUserDto) {
-    // check if user with the same email exists
-    const var_ = this.users.find((u) => u.email === user.email);
-    console.log(var_);
-    return var_;
+  async findAll(): Promise<User[]> {
+    return this.userModel.find().exec();
   }
 }
