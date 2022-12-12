@@ -17,6 +17,12 @@ export class UserService {
     return createdUser;
   }
 
+  async findByEmail(email: string): Promise<User> {
+    return this.userModel.findOne({
+      email: email,
+    });
+  }
+
   async findAll(): Promise<User[]> {
     return this.userModel.find().exec();
   }

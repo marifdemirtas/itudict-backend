@@ -13,7 +13,7 @@ export class User {
   @Prop({ required: true })
   username: string;
 
-  @Prop({ required: true })
+  @Prop({ required: true, unique: true })
   email: string;
 
   @Prop({ required: true })
@@ -31,7 +31,7 @@ export class User {
   @Prop({ required: true, default: Role.junior })
   role: string; // Role of the user
 
-  @Prop({ required: true, default: Date.now })
+  @Prop({ required: true, type: Date, default: new Date() })
   createdAt: Date;
 }
 

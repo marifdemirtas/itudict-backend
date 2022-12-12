@@ -8,8 +8,19 @@ export class UserController {
   constructor(private readonly userService: UserService) {}
 
   @Post('register')
-  register(@Body() user: CreateUserDto) {
+  async register(@Body() user: CreateUserDto) {
     console.log(user);
     return this.userService.create(user);
+  }
+
+  @Post('login')
+  async login(@Body() user: LoginUserDto) {
+    console.log(user);
+    user = await this.userService.findByEmail(user.email);
+    if (user) {
+      return user;
+    } else {
+      return 'User not found';
+    }
   }
 }
