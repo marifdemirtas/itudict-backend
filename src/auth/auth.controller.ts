@@ -6,11 +6,13 @@ import {
   HttpStatus,
   Post,
   Req,
+  UseGuards,
 } from '@nestjs/common';
 import { Request } from 'express';
-import { CreateUserDto } from 'src/user/dto/create-user.dto';
+import { CreateUserDto } from '../user/dto/create-user.dto';
 import { AuthService } from './auth.service';
 import { AuthDto } from './dto/auth.dto';
+import { AccessTokenGuard } from '../common/guards/access-token.guard';
 
 @Controller('auth')
 export class AuthController {
@@ -25,6 +27,7 @@ export class AuthController {
     return this.authService.signIn(data);
   }
 
+  @UseGuards(AccessTokenGuard)
   @Get('logout')
   logout(@Req() req: Request) {
     this.authService.logout(req.user['sub']);
