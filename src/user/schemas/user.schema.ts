@@ -5,12 +5,14 @@ import { Topic } from '../../topic/schemas/topic.schema';
 import * as mongoose from 'mongoose';
 import { Role } from '../interfaces/role.interface';
 import { Date } from 'mongoose';
+import { Document } from 'mongoose';
 
-export type UserDocument = HydratedDocument<User>;
+//export type UserDocument = HydratedDocument<User>;
+export type UserDocument = User & Document;
 
 @Schema()
 export class User {
-  @Prop({ required: true })
+  @Prop({ required: true, unique: true })
   username: string;
 
   @Prop({ required: true, unique: true })
@@ -33,6 +35,12 @@ export class User {
 
   @Prop({ required: true, type: Date, default: new Date() })
   createdAt: Date;
+
+  @Prop({ required: true, type: Boolean, default: false })
+  banned: boolean; // If the user is banned then he can't login
+
+  @Prop()
+  refreshToken: string;
 }
 
 export const UserSchema = SchemaFactory.createForClass(User);
