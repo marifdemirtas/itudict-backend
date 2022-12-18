@@ -3,7 +3,7 @@ import { HydratedDocument } from 'mongoose';
 import { User } from '../../user/schemas/user.schema';
 import * as mongoose from 'mongoose';
 
-export type UserDocument = HydratedDocument<Comment>;
+export type CommentDocument = HydratedDocument<Comment>;
 
 @Schema()
 export class Comment {
