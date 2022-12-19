@@ -13,5 +13,5 @@ import { User, UserSchema } from './schemas/user.schema';
   exports: [UserService],
 })
 export class UserModule {
-  constructor(private userService: UserService) {}
+  //constructor(private userService: UserService) {}
 }

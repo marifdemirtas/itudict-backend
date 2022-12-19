@@ -6,18 +6,22 @@ import { Model } from 'mongoose';
 import { User, UserDocument } from './schemas/user.schema';
 import { forwardRef } from '@nestjs/common';
 import { Inject } from '@nestjs/common';
+import * as bcyrpt from 'bcrypt';
+import { DocumentType } from '@typegoose/typegoose';
+import { UpdateUserDto } from './dto/update-user.dto';
 
 @Injectable()
 export class UserService {
   constructor(@InjectModel(User.name) private userModel: Model<UserDocument>) {}
 
-  async create(createUserDto: CreateUserDto): Promise<User> {
+  async create(createUserDto: CreateUserDto): Promise<UserDocument> {
     const createdUser = new this.userModel(createUserDto);
-    await createdUser.save();
+    const a = createdUser._id;
+    createdUser.save();
     return createdUser;
   }
 
-  async findByEmail(email: string): Promise<User> {
+  async findByEmail(email: string): Promise<UserDocument> {
     return this.userModel.findOne({
       email: email,
     });
@@ -25,5 +29,39 @@ export class UserService {
 
   async findAll(): Promise<User[]> {
     return this.userModel.find().exec();
+  }
+
+  async findById(id: string): Promise<UserDocument> {
+    return this.userModel.findById(id);
+  }
+
+  async findByUsername(username: string): Promise<User> {
+    return this.userModel.findOne({
+      username: username,
+    });
+  }
+
+  async banUser(email: string): Promise<User> {
+    const user = await this.findByEmail(email);
+    if (user) {
+      user.banned = !user.banned;
+      await user.save();
+      return user;
+    } else {
+      throw new Error('User not found');
+    }
+  }
+
+  async update(
+    id: string,
+    updateUserDto: UpdateUserDto,
+  ): Promise<UserDocument> {
+    return this.userModel
+      .findByIdAndUpdate(id, updateUserDto, { new: true })
+      .exec();
+  }
+
+  async remove(id: string): Promise<UserDocument> {
+    return this.userModel.findByIdAndDelete(id).exec();
   }
 }
