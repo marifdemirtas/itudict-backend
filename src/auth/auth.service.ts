@@ -8,6 +8,7 @@ import { UpdateUserDto } from 'src/user/dto/update-user.dto';
 import { User, UserDocument } from 'src/user/schemas/user.schema';
 import * as argon2 from 'argon2';
 import { AuthDto } from './dto/auth.dto';
+import { ForbiddenException } from '@nestjs/common';
 
 @Injectable()
 export class AuthService {
@@ -49,7 +50,7 @@ export class AuthService {
       //if (!passwordMatches)
       throw new BadRequestException('Password is incorrect');
     }
-    const tokens = await this.getTokens(user._id, user.username);
+    const tokens = await this.getTokens(user._id, user.email);
     await this.updateRefreshToken(user._id, tokens.refreshToken);
     return tokens;
   }
@@ -61,12 +62,12 @@ export class AuthService {
     });
   }
 
-  async getTokens(userId: string, username: string) {
+  async getTokens(userId: string, email: string) {
     const [accessToken, refreshToken] = await Promise.all([
       this.jwtService.signAsync(
         {
           sub: userId,
-          username,
+          email,
         },
         {
           secret: this.configService.get<string>('JWT_ACCESS_SECRET'),
@@ -76,7 +77,7 @@ export class AuthService {
       this.jwtService.signAsync(
         {
           sub: userId,
-          username,
+          email,
         },
         {
           secret: this.configService.get<string>('JWT_REFRESH_SECRET'),
@@ -121,5 +122,19 @@ export class AuthService {
 
   async logout(userId: string) {
     return this.userService.update(userId, { refreshToken: null });
+  }
+
+  async refreshTokens(userId: string, refreshToken: string) {
+    const user = await this.userService.findById(userId);
+    if (!user || !user.refreshToken)
+      throw new ForbiddenException('Access Denied');
+    const refreshTokenMatches = await argon2.verify(
+      user.refreshToken,
+      refreshToken,
+    );
+    if (!refreshTokenMatches) throw new ForbiddenException('Access Denied');
+    const tokens = await this.getTokens(user.id, user.username);
+    await this.updateRefreshToken(user.id, tokens.refreshToken);
+    return tokens;
   }
 }

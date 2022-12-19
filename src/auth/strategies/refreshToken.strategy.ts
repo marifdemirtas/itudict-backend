@@ -13,6 +13,7 @@ export class RefreshTokenStrategy extends PassportStrategy(
       jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
       secretOrKey: process.env.JWT_REFRESH_SECRET,
       passReqToCallback: true,
+      usernameField: 'email',
     });
   }
 

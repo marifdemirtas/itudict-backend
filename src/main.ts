@@ -7,3 +7,15 @@ async function bootstrap() {
   await app.listen(4000);
 }
 bootstrap();
+
+/* TO DO:
+- Body validation
+- Security
+- Middleware banned check
+- Enum role
+- Error handling
+- Logging
+- Testing
+- Deployment
+- Documentation
+*/
