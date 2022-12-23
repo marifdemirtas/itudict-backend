@@ -28,7 +28,9 @@ export class UserService {
   }
 
   async findAll(): Promise<User[]> {
-    return this.userModel.find({ banned: false }).exec();
+    return this.userModel
+      .find({ banned: false, role: { $ne: 'admin' } })
+      .exec();
   }
 
   async findById(id: string): Promise<UserDocument> {
@@ -45,6 +47,28 @@ export class UserService {
     const user = await this.findByEmail(email);
     if (user) {
       user.banned = !user.banned;
+      await user.save();
+      return user;
+    } else {
+      throw new Error('User not found');
+    }
+  }
+
+  async promoteUser(email: string): Promise<User> {
+    const user = await this.findByEmail(email);
+    if (user) {
+      user.role = 'Senior';
+      await user.save();
+      return user;
+    } else {
+      throw new Error('User not found');
+    }
+  }
+
+  async demoteUser(email: string): Promise<User> {
+    const user = await this.findByEmail(email);
+    if (user) {
+      user.role = 'Junior';
       await user.save();
       return user;
     } else {

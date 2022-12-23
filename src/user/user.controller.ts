@@ -41,6 +41,34 @@ export class UserController {
   }
 
   @UseGuards(AccessTokenGuard)
+  @Post('promoteUser')
+  async promoteUser(@Req() req: Request, @Query() query) {
+    const email_ = req.user['email'];
+    const user = await this.userService.findByEmail(email_);
+    if (user) {
+      if (user.role === 'admin') {
+        return this.userService.promoteUser(query.email);
+      } else {
+        throw new Error('User not authorized');
+      }
+    } else throw new Error('User not found');
+  }
+
+  @UseGuards(AccessTokenGuard)
+  @Post('demoteUser')
+  async demoteUser(@Req() req: Request, @Query() query) {
+    const email_ = req.user['email'];
+    const user = await this.userService.findByEmail(email_);
+    if (user) {
+      if (user.role === 'admin') {
+        return this.userService.demoteUser(query.email);
+      } else {
+        throw new Error('User not authorized');
+      }
+    } else throw new Error('User not found');
+  }
+
+  @UseGuards(AccessTokenGuard)
   @Get('all')
   async getAll() {
     return this.userService.findAll();
