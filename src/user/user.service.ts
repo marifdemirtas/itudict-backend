@@ -28,7 +28,7 @@ export class UserService {
   }
 
   async findAll(): Promise<User[]> {
-    return this.userModel.find().exec();
+    return this.userModel.find({ banned: false }).exec();
   }
 
   async findById(id: string): Promise<UserDocument> {
