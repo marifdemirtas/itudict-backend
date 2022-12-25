@@ -19,6 +19,7 @@ export class CommentService {
     await createdComment.save();
     const topic = await this.topicService.findById(createCommentDto.topicId);
     topic.comments.push(createdComment);
+    topic.comment_count = topic.comment_count + 1;
     await topic.save();
     return createdComment;
   }
