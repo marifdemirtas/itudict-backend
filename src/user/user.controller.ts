@@ -71,4 +71,14 @@ export class UserController {
   async getAll() {
     return this.userService.findAll();
   }
+
+  //get paginated users
+  @UseGuards(AccessTokenGuard)
+  @Get('filter/:key/:page/:limit')
+  async getPaginatedUsers(@Req() req: Request) {
+    const page = parseInt(req.params.page);
+    const limit = parseInt(req.params.limit);
+    const key = req.params.key;
+    return await this.userService.filterPaginatedUsers(page, limit, key);
+  }
 }

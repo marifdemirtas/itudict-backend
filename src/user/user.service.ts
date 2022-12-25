@@ -10,6 +10,7 @@ import * as bcyrpt from 'bcrypt';
 import { DocumentType } from '@typegoose/typegoose';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { Role } from './interfaces/role.interface';
+import internal from 'stream';
 
 @Injectable()
 export class UserService {
@@ -91,5 +92,20 @@ export class UserService {
 
   async remove(id: string): Promise<UserDocument> {
     return this.userModel.findByIdAndDelete(id).exec();
+  }
+
+  async filterPaginatedUsers(
+    page: number,
+    limit: number,
+    key: string,
+  ): Promise<User[]> {
+    return this.userModel
+      .find({
+        role: { $ne: 'admin' },
+        username: { $regex: '.*' + key + '.*', $options: 'i' },
+      })
+      .skip((page - 1) * limit)
+      .limit(limit)
+      .exec();
   }
 }
