@@ -60,4 +60,16 @@ export class TopicController {
       console.log(error);
     }
   }
+
+  @UseGuards(AccessTokenGuard)
+  @Get('paginated/:page/:limit')
+  async getPaginatedTopics(@Req() req: Request) {
+    try {
+      const page = parseInt(req.params.page);
+      const limit = parseInt(req.params.limit);
+      return await this.topicService.getPaginatedTopics(page, limit);
+    } catch (error) {
+      console.log(error);
+    }
+  }
 }

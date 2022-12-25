@@ -62,4 +62,15 @@ export class TopicService {
       .populate('comments')
       .exec();
   }
+
+  async getPaginatedTopics(page: number, limit: number) {
+    const count = await this.topicModel.countDocuments();
+    const topics = await this.topicModel
+      .find()
+      .skip((page - 1) * limit)
+      .limit(limit)
+      .populate('owner')
+      .exec();
+    return { count, topics };
+  }
 }
