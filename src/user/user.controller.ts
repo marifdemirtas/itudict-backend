@@ -18,9 +18,10 @@ export class UserController {
     return req.user;
   }
 
-  @Post('find')
-  async find(@Body() user: LoginUserDto) {
-    return this.userService.findByEmail(user.email);
+  @Get('find/:email')
+  async find(@Req() req: Request) {
+    const email_ = req.params.email;
+    return this.userService.findByEmail(email_);
   }
 
   @UseGuards(AccessTokenGuard)
