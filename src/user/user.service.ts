@@ -18,7 +18,7 @@ export class UserService {
   async create(createUserDto: CreateUserDto): Promise<UserDocument> {
     const createdUser = new this.userModel(createUserDto);
     const a = createdUser._id;
-    createdUser.role = Role.senior;
+    createdUser.role = Role.junior;
     createdUser.comments = [];
     createdUser.topics = [];
     createdUser.save();
