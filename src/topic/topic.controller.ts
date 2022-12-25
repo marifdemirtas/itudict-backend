@@ -1,15 +1,6 @@
 //topic controller
 //
-import {
-  Controller,
-  Get,
-  Post,
-  Body,
-  Param,
-  Delete,
-  Put,
-  Req,
-} from '@nestjs/common';
+import { Controller, Post, Body, Req } from '@nestjs/common';
 import { TopicService } from './topic.service';
 import { CreateTopicDto } from './dto/create-topic.dto';
 import { CommentService } from 'src/comment/comment.service';
@@ -19,7 +10,7 @@ import { HttpException } from '@nestjs/common';
 import { HttpStatus } from '@nestjs/common';
 import { AccessTokenGuard } from 'src/common/guards/access-token.guard';
 import { UseGuards } from '@nestjs/common';
-import { Role } from '../common/enum/role.enum';
+import { Role } from '../user/interfaces/role.interface';
 
 @Controller('topic')
 export class TopicController {
@@ -39,7 +30,7 @@ export class TopicController {
     try {
       const email = req.user['email'];
       const user = await this.userService.findByEmail(email);
-      if (user['banned'] == true || user['role'] != Role.Senior)
+      if (user['banned'] == true || user['role'] != Role.senior)
         throw new HttpException('Permission denied', HttpStatus.FORBIDDEN);
       return await this.topicService.createTopic(createTopicDto);
     } catch (error) {
