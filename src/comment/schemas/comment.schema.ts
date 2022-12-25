@@ -19,7 +19,7 @@ export class Comment {
   @Prop()
   topicId: string;
 
-  @Prop()
+  @Prop({ required: true, default: Date.now })
   createdAt: Date;
 
   @Prop()

@@ -26,7 +26,8 @@ export class CommentService {
 
   //get all comments
   async getAllComments() {
-    return await this.commentModel.find().exec();
+    const comments = await this.commentModel.find().populate('owner').exec();
+    return comments;
   }
 
   //get comments of user by email
@@ -35,6 +36,7 @@ export class CommentService {
       .find({ owner: { email: email } })
       .skip(page * limit)
       .limit(limit)
+      .populate('owner')
       .exec();
   }
 
@@ -47,6 +49,7 @@ export class CommentService {
       .find({ topicId: { _id: topicId } })
       .skip(page * limit)
       .limit(limit)
+      .populate('owner')
       .exec();
     return { count, comments };
   }
@@ -59,6 +62,7 @@ export class CommentService {
       .find({ owner: { _id: id } })
       .skip(page * limit)
       .limit(limit)
+      .populate('owner')
       .exec();
     return { count, comments };
   }
