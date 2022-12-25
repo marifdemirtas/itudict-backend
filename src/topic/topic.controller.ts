@@ -11,6 +11,7 @@ import { AccessTokenGuard } from 'src/common/guards/access-token.guard';
 import { UseGuards } from '@nestjs/common';
 import { Role } from '../common/enum/role.enum';
 import RoleGuard from '../common/guards/role.guard';
+import { BannedGuard } from 'src/common/guards/banned.guard';
 
 @Controller('topic')
 export class TopicController {
@@ -20,8 +21,7 @@ export class TopicController {
   ) {}
 
   //create topic
-  @UseGuards(RoleGuard(Role.Senior))
-  @UseGuards(AccessTokenGuard)
+  @UseGuards(AccessTokenGuard, BannedGuard, RoleGuard(Role.Senior))
   @Post('create')
   async createTopic(
     @Req() req: Request,

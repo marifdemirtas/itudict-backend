@@ -6,6 +6,7 @@ const RoleGuard = (role: Role): Type<CanActivate> => {
     constructor(private readonly userService: UserService) {}
     async canActivate(context: ExecutionContext) {
       const request = context.switchToHttp().getRequest();
+      if (!('user' in request)) return false;
       const user = request.user;
       if (user.role == role) return true;
     }
