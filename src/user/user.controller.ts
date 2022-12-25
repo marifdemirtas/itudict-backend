@@ -1,14 +1,11 @@
 import { Controller, Post, Body, Get } from '@nestjs/common';
-import { CreateUserDto } from './dto/create-user.dto';
 import { LoginUserDto } from './dto/login-user.dto';
 import { UserService } from './user.service';
-import { AuthService } from 'src/auth/auth.service';
 import { UseGuards } from '@nestjs/common';
 import { AccessTokenGuard } from 'src/common/guards/access-token.guard';
 import { Req } from '@nestjs/common';
 import { Request } from 'express';
 import { Query } from '@nestjs/common';
-import { QueryMethod } from '@typegoose/typegoose';
 
 @Controller('user')
 export class UserController {

@@ -1,9 +1,8 @@
 //topic controller
 //
-import { Controller, Post, Body, Req } from '@nestjs/common';
+import { Controller, Post, Body, Req, Get } from '@nestjs/common';
 import { TopicService } from './topic.service';
 import { CreateTopicDto } from './dto/create-topic.dto';
-import { CommentService } from 'src/comment/comment.service';
 import { UserService } from 'src/user/user.service';
 import { Request } from 'express';
 import { HttpException } from '@nestjs/common';
@@ -16,7 +15,6 @@ import { Role } from '../user/interfaces/role.interface';
 export class TopicController {
   constructor(
     private readonly topicService: TopicService,
-    private readonly commentService: CommentService,
     private readonly userService: UserService,
   ) {}
 
@@ -32,7 +30,30 @@ export class TopicController {
       const user = await this.userService.findByEmail(email);
       if (user['banned'] == true || user['role'] != Role.senior)
         throw new HttpException('Permission denied', HttpStatus.FORBIDDEN);
-      return await this.topicService.createTopic(createTopicDto);
+      const topic = await this.topicService.createTopic(createTopicDto, user);
+      user.topics.push(topic);
+      await user.save();
+      return topic;
+    } catch (error) {
+      console.log(error);
+    }
+  }
+
+  @UseGuards(AccessTokenGuard)
+  @Get('latest')
+  async getLatestTopics(@Req() req: Request) {
+    try {
+      return await this.topicService.getLatestTopics();
+    } catch (error) {
+      console.log(error);
+    }
+  }
+
+  @UseGuards(AccessTokenGuard)
+  @Get('popular')
+  async getPopularTopics(@Req() req: Request) {
+    try {
+      return await this.topicService.getPopularTopics();
     } catch (error) {
       console.log(error);
     }

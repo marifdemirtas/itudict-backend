@@ -4,6 +4,7 @@ import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { CreateCommentDto } from './dto/create-comment.dto';
 import { TopicService } from 'src/topic/topic.service';
+import { User } from 'src/user/schemas/user.schema';
 
 @Injectable()
 export class CommentService {
@@ -12,8 +13,9 @@ export class CommentService {
     private topicService: TopicService,
   ) {}
   //create comment
-  async createComment(createCommentDto: CreateCommentDto) {
+  async createComment(createCommentDto: CreateCommentDto, user: User) {
     const createdComment = new this.commentModel(createCommentDto);
+    createdComment.owner = user;
     await createdComment.save();
     const topic = await this.topicService.findById(createCommentDto.topicId);
     topic.comments.push(createdComment);
@@ -27,8 +29,12 @@ export class CommentService {
   }
 
   //get comments of user by email
-  async getCommentsByEmail(email: string) {
-    return await this.commentModel.find({ owner: { email: email } }).exec();
+  async getCommentsByEmail(email: string, page: number, limit: number) {
+    return await this.commentModel
+      .find({ owner: { email: email } })
+      .skip(page * limit)
+      .limit(limit)
+      .exec();
   }
 
   //get paginated comments

@@ -9,6 +9,7 @@ import { Inject } from '@nestjs/common';
 import * as bcyrpt from 'bcrypt';
 import { DocumentType } from '@typegoose/typegoose';
 import { UpdateUserDto } from './dto/update-user.dto';
+import { Role } from './interfaces/role.interface';
 
 @Injectable()
 export class UserService {
@@ -17,6 +18,9 @@ export class UserService {
   async create(createUserDto: CreateUserDto): Promise<UserDocument> {
     const createdUser = new this.userModel(createUserDto);
     const a = createdUser._id;
+    createdUser.role = Role.senior;
+    createdUser.comments = [];
+    createdUser.topics = [];
     createdUser.save();
     return createdUser;
   }
