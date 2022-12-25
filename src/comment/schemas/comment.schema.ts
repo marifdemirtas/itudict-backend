@@ -19,6 +19,9 @@ export class Comment {
   @Prop()
   topicId: string;
 
+  @Prop()
+  title: string;
+
   @Prop({ required: true, default: Date.now })
   createdAt: Date;
 
