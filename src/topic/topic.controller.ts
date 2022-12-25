@@ -31,7 +31,7 @@ export class TopicController {
       if (user['banned'] == true || user['role'] != Role.senior)
         throw new HttpException('Permission denied', HttpStatus.FORBIDDEN);
       const topic = await this.topicService.createTopic(createTopicDto, user);
-      user.topics.push(topic);
+      user.topics.push(topic._id);
       await user.save();
       return topic;
     } catch (error) {

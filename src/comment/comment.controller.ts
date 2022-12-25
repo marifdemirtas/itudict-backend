@@ -33,7 +33,7 @@ export class CommentController {
       createCommentDto,
       user,
     );
-    user.comments.push(comment);
+    user.comments.push(comment._id);
     await user.save();
     return comment;
   }
