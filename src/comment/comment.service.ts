@@ -40,10 +40,26 @@ export class CommentService {
 
   //get paginated comments
   async getPaginatedComments(topicId: string, page: number, limit: number) {
-    return await this.commentModel
-      .find({ topic: { _id: topicId } })
+    const count = await this.commentModel.countDocuments({
+      topicId: { _id: topicId },
+    });
+    const comments = await this.commentModel
+      .find({ topicId: { _id: topicId } })
       .skip(page * limit)
       .limit(limit)
       .exec();
+    return { count, comments };
+  }
+
+  async getPaginatedByOwnerId(id: string, page: number, limit: number) {
+    const count = await this.commentModel.countDocuments({
+      owner: { _id: id },
+    });
+    const comments = await this.commentModel
+      .find({ owner: { _id: id } })
+      .skip(page * limit)
+      .limit(limit)
+      .exec();
+    return { count, comments };
   }
 }

@@ -47,20 +47,20 @@ export class CommentController {
 
   //get comments by email
   @UseGuards(AccessTokenGuard)
-  @Get(':email/:page/:limit')
-  async getCommentsByEmail(@Req() req: Request) {
+  @Get('owner/:owner/:page/:limit')
+  async getCommentsByOwnerId(@Req() req: Request) {
     //check if user is not banned
     if (req.user['banned'] == true)
       throw new HttpException('User is banned', HttpStatus.FORBIDDEN);
-    const email = req.params.email;
+    const id = req.params.owner;
     const page = parseInt(req.params.page);
     const limit = parseInt(req.params.limit);
-    return await this.commentService.getCommentsByEmail(email, page, limit);
+    return await this.commentService.getPaginatedByOwnerId(id, page, limit);
   }
 
   //get paginated comments of topic
   @UseGuards(AccessTokenGuard)
-  @Get(':topicId/:page/:limit')
+  @Get('topic/:topicId/:page/:limit')
   async getPaginatedComments(@Req() req: Request) {
     const topicId = req.params.topicId;
     const page = parseInt(req.params.page);
