@@ -6,6 +6,8 @@ import { AccessTokenGuard } from 'src/common/guards/access-token.guard';
 import { Req } from '@nestjs/common';
 import { Request } from 'express';
 import { Query } from '@nestjs/common';
+import RoleGuard from 'src/common/guards/role.guard';
+import { Role } from 'src/common/enum/role.enum';
 
 @Controller('user')
 export class UserController {
@@ -24,6 +26,7 @@ export class UserController {
     return this.userService.findByEmail(email_);
   }
 
+  @UseGuards(RoleGuard(Role.Admin))
   @UseGuards(AccessTokenGuard)
   @Post('banUser')
   async banUser(@Req() req: Request, @Query() query) {
@@ -38,6 +41,7 @@ export class UserController {
     } else throw new Error('User not found');
   }
 
+  @UseGuards(RoleGuard(Role.Admin))
   @UseGuards(AccessTokenGuard)
   @Post('promoteUser')
   async promoteUser(@Req() req: Request, @Query() query) {
@@ -52,6 +56,7 @@ export class UserController {
     } else throw new Error('User not found');
   }
 
+  @UseGuards(RoleGuard(Role.Admin))
   @UseGuards(AccessTokenGuard)
   @Post('demoteUser')
   async demoteUser(@Req() req: Request, @Query() query) {
@@ -66,6 +71,7 @@ export class UserController {
     } else throw new Error('User not found');
   }
 
+  @UseGuards(RoleGuard(Role.Admin))
   @UseGuards(AccessTokenGuard)
   @Get('all')
   async getAll() {
@@ -73,6 +79,7 @@ export class UserController {
   }
 
   //get paginated users
+  @UseGuards(RoleGuard(Role.Admin))
   @UseGuards(AccessTokenGuard)
   @Get('filter/:key/:page/:limit')
   async getPaginatedUsers(@Req() req: Request) {

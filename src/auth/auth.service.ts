@@ -36,7 +36,12 @@ export class AuthService {
       ...createUserDto,
       password: hash,
     });
-    const tokens = await this.getTokens(newUser._id, newUser.email);
+    const tokens = await this.getTokens(
+      newUser._id,
+      newUser.email,
+      newUser.role,
+      newUser.banned,
+    );
     await this.updateRefreshToken(newUser._id, tokens.refreshToken);
     return { ...tokens, role: newUser.role };
   }
@@ -50,7 +55,12 @@ export class AuthService {
       //if (!passwordMatches)
       throw new BadRequestException('Password is incorrect');
     }
-    const tokens = await this.getTokens(user._id, user.email);
+    const tokens = await this.getTokens(
+      user._id,
+      user.email,
+      user.role,
+      user.banned,
+    );
     await this.updateRefreshToken(user._id, tokens.refreshToken);
     return { ...tokens, role: user.role };
   }
@@ -62,12 +72,19 @@ export class AuthService {
     });
   }
 
-  async getTokens(userId: string, email: string) {
+  async getTokens(
+    userId: string,
+    email: string,
+    role: string,
+    banned: boolean,
+  ) {
     const [accessToken, refreshToken] = await Promise.all([
       this.jwtService.signAsync(
         {
           sub: userId,
           email,
+          role,
+          banned,
         },
         {
           secret: this.configService.get<string>('JWT_ACCESS_SECRET'),
@@ -78,6 +95,8 @@ export class AuthService {
         {
           sub: userId,
           email,
+          role,
+          banned,
         },
         {
           secret: this.configService.get<string>('JWT_REFRESH_SECRET'),
@@ -133,7 +152,12 @@ export class AuthService {
       refreshToken,
     );
     if (!refreshTokenMatches) throw new ForbiddenException('Access Denied');
-    const tokens = await this.getTokens(user.id, user.username);
+    const tokens = await this.getTokens(
+      user.id,
+      user.username,
+      user.role,
+      user.banned,
+    );
     await this.updateRefreshToken(user.id, tokens.refreshToken);
     return tokens;
   }
