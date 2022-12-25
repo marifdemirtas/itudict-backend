@@ -69,7 +69,6 @@ export class CommentService {
       .find({ owner: { _id: id } })
       .skip(page * limit)
       .limit(limit)
-      .populate('owner')
       .exec();
     return { count, comments };
   }
