@@ -67,4 +67,22 @@ export class CommentController {
     const limit = parseInt(req.params.limit);
     return await this.commentService.getPaginatedComments(topicId, page, limit);
   }
+
+  //like comment
+  // comment like count += 1
+  // comment likedBy.push(userId)
+  // user likedComments.push(commentId)
+  @UseGuards(AccessTokenGuard)
+  @Post('like/:commentId')
+  async likeComment(@Req() req: Request) {
+    const commentId = req.params.commentId;
+    return await this.commentService.likeComment(commentId);
+  }
+
+  @UseGuards(AccessTokenGuard)
+  @Post('dislike/:commentId')
+  async dislikeComment(@Req() req: Request) {
+    const commentId = req.params.commentId;
+    return await this.commentService.dislikeComment(commentId);
+  }
 }

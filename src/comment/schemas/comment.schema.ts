@@ -22,16 +22,22 @@ export class Comment {
   @Prop({ required: true, default: Date.now })
   createdAt: Date;
 
-  @Prop()
+  @Prop({ required: true, default: 0 })
   likes: number;
 
-  @Prop()
+  @Prop({ required: true, default: 0 })
   dislikes: number;
 
-  @Prop({ type: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }] })
+  @Prop({
+    type: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }],
+    default: [],
+  })
   liked_by: User[];
 
-  @Prop({ type: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }] })
+  @Prop({
+    type: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }],
+    default: [],
+  })
   disliked_by: User[];
 }
 

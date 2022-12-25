@@ -5,12 +5,15 @@ import { Model } from 'mongoose';
 import { CreateCommentDto } from './dto/create-comment.dto';
 import { TopicService } from 'src/topic/topic.service';
 import { User } from 'src/user/schemas/user.schema';
+import { UserService } from 'src/user/user.service';
+import { UserDocument } from 'src/user/schemas/user.schema';
 
 @Injectable()
 export class CommentService {
   constructor(
     @InjectModel(Comment.name) private commentModel: Model<CommentDocument>,
     private topicService: TopicService,
+    private userService: UserService,
   ) {}
   //create comment
   async createComment(createCommentDto: CreateCommentDto, user: User) {
@@ -65,5 +68,69 @@ export class CommentService {
       .populate('owner')
       .exec();
     return { count, comments };
+  }
+
+  //find comment by id
+  async findById(id: string): Promise<CommentDocument> {
+    const comment = await this.commentModel
+      .findOne({ _id: id })
+      .populate('owner')
+      .populate('liked_by')
+      .populate('disliked_by')
+      .exec();
+    return comment;
+  }
+
+  //like comment
+  // comment like count += 1
+  // comment likedBy.push(userId)
+  // user likedComments.push(commentId)
+  async likeComment(id: string) {
+    const comment = await this.findById(id);
+    const user = await this.userService.findById(comment.owner['_id']);
+    // if user already liked the comment
+    console.log(comment.liked_by);
+    if (comment.liked_by.find((liker) => liker['_id'] == user.id)) {
+      return comment;
+    }
+    // if user already disliked the comment
+    else if (comment.disliked_by.find((liker) => liker['_id'] == user.id)) {
+      comment.dislikes = comment.dislikes - 1;
+      comment.disliked_by = comment.disliked_by.filter(
+        (user_) => user_['_id'] != user.id,
+      );
+    }
+    comment.likes = comment.likes + 1;
+    comment.liked_by.push(user);
+    await comment.save();
+    user.liked_comments.push(comment);
+    await user.save();
+    return comment;
+  }
+
+  async dislikeComment(id: string) {
+    const comment = await this.findById(id);
+    const user = await this.userService.findById(comment.owner['_id']);
+    // if user already liked the comment
+    if (comment.liked_by.find((liker) => liker['_id'] == user.id)) {
+      comment.likes = comment.likes - 1;
+      comment.liked_by = comment.liked_by.filter(
+        (user_) => user_['_id'] != user.id,
+      );
+      // pull disliked comment from user liked_comments
+      user.liked_comments = user.liked_comments.filter(
+        (comment) => comment['_id'] != id,
+      );
+      await user.save();
+    }
+    // if user already disliked the comment
+    else if (comment.disliked_by.find((liker) => liker['_id'] == user.id)) {
+      return comment;
+    }
+    comment.dislikes = comment.dislikes + 1;
+    comment.disliked_by.push(user);
+    await comment.save();
+
+    return comment;
   }
 }
