@@ -38,7 +38,7 @@ export class AuthService {
     });
     const tokens = await this.getTokens(newUser._id, newUser.email);
     await this.updateRefreshToken(newUser._id, tokens.refreshToken);
-    return tokens;
+    return { ...tokens, role: newUser.role };
   }
 
   async signIn(data: AuthDto) {
