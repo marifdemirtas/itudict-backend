@@ -20,11 +20,14 @@ jobs:
         docker build -t itudict-be:latest .
 
         # Log in to Amazon ECR
+        aws ecr get-login-password\--region region | \
+        docker login --username AWS \
+        --password-stdin ${{ secrets.AWS_REPOSITORY_URL }}
         $(aws ecr get-login --no-include-email)
 
         # Push the image to ECR
-        docker tag itudict-be:latest ${{ secrets.AWS_REPOSITORY_URL }}:latest
-        docker push ${{ secrets.AWS_REPOSITORY_URL }}:latest
+        docker tag itudict-be:latest ${{ secrets.AWS_REPOSITORY_URL }}/itudict:latest
+        docker push ${{ secrets.AWS_REPOSITORY_URL }}/itudict:latest
   deploy:
     needs: build
     runs-on: ubuntu-latest
