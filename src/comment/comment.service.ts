@@ -142,4 +142,39 @@ export class CommentService {
 
     return comment;
   }
+
+  async deleteComment(id: string) {
+    //delete comment
+    // from liked_by of comment find users and pull comment from their liked_comments
+    // from user pull comment from their comments
+    // from topic pull comment from their comments and comment_count -= 1
+    try {
+      const comment = await this.findById(id);
+      const liked_by = comment.liked_by;
+      for await (const user of liked_by) {
+        console.log(user['id']);
+        console.log(comment.id);
+        await this.userService.deleteCommentFromLikedComments(
+          comment['id'],
+          user['id'],
+        );
+      }
+      await this.userService.deleteCommentFromUserComments(
+        comment['id'],
+        comment.owner['id'],
+      );
+      // delete comment from topic with given commnt and topic id
+      await this.topicService.deleteCommentFromTopic(
+        comment['id'],
+        comment.topicId,
+      );
+
+      // delete comment
+      await this.commentModel.deleteOne({ _id: id });
+      return true;
+    } catch (error) {
+      console.log(error);
+      throw new Error('Error deleting comment: ' + error);
+    }
+  }
 }

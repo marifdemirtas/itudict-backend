@@ -6,6 +6,7 @@ import {
   Post,
   Req,
   UseGuards,
+  Delete,
 } from '@nestjs/common';
 import { Request } from 'express';
 import { CommentService } from './comment.service';
@@ -86,5 +87,13 @@ export class CommentController {
   async dislikeComment(@Req() req: Request) {
     const commentId = req.params.commentId;
     return await this.commentService.dislikeComment(commentId);
+  }
+
+  //delete comment
+  @UseGuards(AccessTokenGuard)
+  @Delete('delete/:commentId')
+  async deleteComment(@Req() req: Request) {
+    const commentId = req.params.commentId;
+    return await this.commentService.deleteComment(commentId);
   }
 }

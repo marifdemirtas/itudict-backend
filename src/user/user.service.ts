@@ -108,4 +108,32 @@ export class UserService {
       .limit(limit)
       .exec();
   }
+
+  // delete comment from liked comments with given comment and user id
+  async deleteCommentFromLikedComments(
+    commentId: string,
+    userId: string,
+  ): Promise<UserDocument> {
+    const user = await this.findById(userId);
+    user.liked_comments = user.liked_comments.filter((comment) => {
+      console.log(comment['id']);
+      console.log(commentId);
+      comment['id'] != commentId;
+    });
+    await user.save();
+    return user;
+  }
+
+  // delete comment from user comments with given comment and user id
+  async deleteCommentFromUserComments(
+    commentId: string,
+    userId: string,
+  ): Promise<UserDocument> {
+    const user = await this.findById(userId);
+    user.comments = user.comments.filter((comment) => {
+      comment['id'] != commentId;
+    });
+    await user.save();
+    return user;
+  }
 }
