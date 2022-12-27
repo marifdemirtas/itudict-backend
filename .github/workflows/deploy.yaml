@@ -23,7 +23,6 @@ jobs:
         aws ecr get-login-password --region $AWS_DEFAULT_REGION | \
         docker login --username AWS \
         --password-stdin ${{ secrets.AWS_REPOSITORY_URL }}
-        $(aws ecr get-login --no-include-email)
 
         # Push the image to ECR
         docker tag itudict-be:latest ${{ secrets.AWS_REPOSITORY_URL }}/itudict:latest
