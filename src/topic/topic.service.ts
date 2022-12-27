@@ -73,4 +73,16 @@ export class TopicService {
       .exec();
     return { count, topics };
   }
+
+  // delete comment from topic
+  async deleteCommentFromTopic(commentId: string, topicId: string) {
+    const topic = await this.findById(topicId);
+    topic.comments = topic.comments.filter(
+      (comment) => comment['id'] != commentId,
+    ); // delete comment from topic
+    const topic_ = await this.findById(topicId);
+
+    topic.comment_count = topic.comment_count - 1; // decrement comment count
+    await topic.save();
+  }
 }
