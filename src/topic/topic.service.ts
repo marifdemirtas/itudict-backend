@@ -85,4 +85,22 @@ export class TopicService {
     topic.comment_count = topic.comment_count - 1; // decrement comment count
     await topic.save();
   }
+
+  async filterPaginatedTopics(
+    page: number,
+    limit: number,
+    filter: string,
+  ): Promise<{ count: number; topics: TopicDocument[] }> {
+    const count = await this.topicModel.countDocuments({
+      title: { $regex: filter, $options: 'i' },
+    });
+    const topics = await this.topicModel
+      .find({ title: { $regex: '.*' + filter + '.*', $options: 'i' } })
+      .skip((page - 1) * limit)
+      .limit(limit)
+      .populate('owner')
+      .populate('comments')
+      .exec();
+    return { count, topics };
+  }
 }
