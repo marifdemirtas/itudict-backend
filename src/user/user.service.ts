@@ -95,14 +95,14 @@ export class UserService {
     const count = await this.userModel
       .find({
         banned: false,
-        role: { $ne: 'admin' },
+        role: { $ne: 'Admin' },
         username: { $regex: '.*' + key + '.*', $options: 'i' },
       })
       .countDocuments();
     const users = await this.userModel
       .find({
         banned: false,
-        role: { $ne: 'admin' },
+        role: { $ne: 'Admin' },
         username: { $regex: '.*' + key + '.*', $options: 'i' },
       })
       .skip((page - 1) * limit)

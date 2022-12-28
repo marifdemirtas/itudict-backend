@@ -47,7 +47,7 @@ export class UserController {
     const email_ = req.user['email'];
     const user = await this.userService.findByEmail(email_);
     if (user) {
-      if (user.role === 'admin') {
+      if (user.role === 'Admin') {
         return this.userService.promoteUser(query.email);
       } else {
         throw new Error('User not authorized');
