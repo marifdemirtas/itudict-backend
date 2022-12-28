@@ -101,7 +101,7 @@ export class UserService {
     key: string,
   ): Promise<any> {
     const count = await this.userModel.countDocuments();
-    const users = this.userModel
+    const users = await this.userModel
       .find({
         role: { $ne: 'admin' },
         username: { $regex: '.*' + key + '.*', $options: 'i' },
