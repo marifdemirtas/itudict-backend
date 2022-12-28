@@ -32,7 +32,7 @@ export class UserController {
     const email_ = req.user['email'];
     const user = await this.userService.findByEmail(email_);
     if (user) {
-      if (user.role === 'admin') {
+      if (user.role === Role.Admin) {
         return this.userService.banUser(query.email);
       } else {
         throw new Error('User not authorized');
@@ -46,8 +46,9 @@ export class UserController {
   async promoteUser(@Req() req: Request, @Query() query) {
     const email_ = req.user['email'];
     const user = await this.userService.findByEmail(email_);
+    console.log(user);
     if (user) {
-      if (user.role === 'admin') {
+      if (user.role === Role.Admin) {
         return this.userService.promoteUser(query.email);
       } else {
         throw new Error('User not authorized');
@@ -62,7 +63,7 @@ export class UserController {
     const email_ = req.user['email'];
     const user = await this.userService.findByEmail(email_);
     if (user) {
-      if (user.role === 'admin') {
+      if (user.role === Role.Admin) {
         return this.userService.demoteUser(query.email);
       } else {
         throw new Error('User not authorized');
