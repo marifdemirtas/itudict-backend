@@ -1,17 +1,10 @@
 import { Injectable } from '@nestjs/common';
-import { LoginUserDto } from './dto/login-user.dto';
 import { CreateUserDto } from './dto/create-user.dto';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { User, UserDocument } from './schemas/user.schema';
-import { forwardRef } from '@nestjs/common';
-import { Inject } from '@nestjs/common';
-import * as bcyrpt from 'bcrypt';
-import { DocumentType } from '@typegoose/typegoose';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { Role } from './interfaces/role.interface';
-import internal from 'stream';
-import { TopicService } from 'src/topic/topic.service';
 
 @Injectable()
 export class UserService {
@@ -19,7 +12,6 @@ export class UserService {
 
   async create(createUserDto: CreateUserDto): Promise<UserDocument> {
     const createdUser = new this.userModel(createUserDto);
-    const a = createdUser._id;
     createdUser.role = Role.junior;
     createdUser.comments = [];
     createdUser.topics = [];
@@ -100,7 +92,13 @@ export class UserService {
     limit: number,
     key: string,
   ): Promise<any> {
-    const count = await this.userModel.countDocuments();
+    const count = await this.userModel
+      .find({
+        banned: false,
+        role: { $ne: 'admin' },
+        username: { $regex: '.*' + key + '.*', $options: 'i' },
+      })
+      .countDocuments();
     const users = await this.userModel
       .find({
         banned: false,
