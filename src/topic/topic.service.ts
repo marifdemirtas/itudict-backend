@@ -73,7 +73,7 @@ export class TopicService {
     const count = await this.topicModel.countDocuments();
     const topics = await this.topicModel
       .find()
-      .skip((page - 1) * limit)
+      .skip(page * limit)
       .limit(limit)
       .populate('owner')
       .exec();

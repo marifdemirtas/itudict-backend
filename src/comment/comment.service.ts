@@ -33,9 +33,15 @@ export class CommentService {
   }
 
   //get all comments
-  async getAllComments() {
-    const comments = await this.commentModel.find().populate('owner').exec();
-    return comments;
+  async getAllComments(page: number, limit: number) {
+    const count = await this.commentModel.countDocuments();
+    const comments = await this.commentModel
+      .find()
+      .skip(page * limit)
+      .limit(limit)
+      .populate('owner')
+      .exec();
+    return { count, comments };
   }
 
   //get comments of user by email

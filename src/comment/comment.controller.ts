@@ -41,9 +41,11 @@ export class CommentController {
 
   //get all comments
   @UseGuards(AccessTokenGuard)
-  @Get('all')
-  async getAllComments() {
-    return await this.commentService.getAllComments();
+  @Get('all/:page/:limit')
+  async getAllComments(@Req() req: Request) {
+    const page = parseInt(req.params.page);
+    const limit = parseInt(req.params.limit);
+    return await this.commentService.getAllComments(page, limit);
   }
 
   //get comments by email
