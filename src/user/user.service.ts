@@ -27,7 +27,7 @@ export class UserService {
 
   async findAll(): Promise<User[]> {
     return this.userModel
-      .find({ banned: false, role: { $ne: 'admin' } })
+      .find({ banned: false, role: { $ne: 'Admin' } })
       .exec();
   }
 
