@@ -7,6 +7,8 @@ import { MongooseModule } from '@nestjs/mongoose';
 import { Topic, TopicSchema } from './schemas/topic.schema';
 import { UserModule } from 'src/user/user.module';
 import { CommentModule } from 'src/comment/comment.module';
+import { APP_GUARD } from '@nestjs/core';
+import { ThrottlerGuard } from '@nestjs/throttler';
 
 @Module({
   imports: [
@@ -15,7 +17,13 @@ import { CommentModule } from 'src/comment/comment.module';
     forwardRef(() => CommentModule),
   ],
   controllers: [TopicController],
-  providers: [TopicService],
+  providers: [
+    TopicService,
+    {
+      provide: APP_GUARD,
+      useClass: ThrottlerGuard,
+    },
+  ],
   exports: [TopicService],
 })
 export class TopicModule {}

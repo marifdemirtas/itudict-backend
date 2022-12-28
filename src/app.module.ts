@@ -6,6 +6,7 @@ import { UserModule } from './user/user.module';
 import { AuthModule } from './auth/auth.module';
 import { CommentModule } from './comment/comment.module';
 import { TopicModule } from './topic/topic.module';
+import { ThrottlerModule } from '@nestjs/throttler';
 
 @Module({
   imports: [
@@ -15,6 +16,10 @@ import { TopicModule } from './topic/topic.module';
     AuthModule,
     CommentModule,
     TopicModule,
+    ThrottlerModule.forRoot({
+      ttl: 10,
+      limit: 10,
+    }),
   ],
 })
 export class AppModule implements NestModule {
