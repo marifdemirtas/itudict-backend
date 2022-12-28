@@ -11,6 +11,7 @@ import { DocumentType } from '@typegoose/typegoose';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { Role } from './interfaces/role.interface';
 import internal from 'stream';
+import { TopicService } from 'src/topic/topic.service';
 
 @Injectable()
 export class UserService {
@@ -98,8 +99,9 @@ export class UserService {
     page: number,
     limit: number,
     key: string,
-  ): Promise<User[]> {
-    return this.userModel
+  ): Promise<any> {
+    const count = await this.userModel.countDocuments();
+    const users = await this.userModel
       .find({
         role: { $ne: 'admin' },
         username: { $regex: '.*' + key + '.*', $options: 'i' },
@@ -107,6 +109,7 @@ export class UserService {
       .skip((page - 1) * limit)
       .limit(limit)
       .exec();
+    return { count, users };
   }
 
   // delete comment from liked comments with given comment and user id
@@ -115,11 +118,12 @@ export class UserService {
     userId: string,
   ): Promise<UserDocument> {
     const user = await this.findById(userId);
-    user.liked_comments = user.liked_comments.filter((comment) => {
-      console.log(comment['id']);
-      console.log(commentId);
-      comment['id'] != commentId;
+    const res = user.liked_comments.filter((comment) => {
+      console.log(comment['_id'].toString() + '   ' + commentId);
+      console.log(comment['_id'].toString() != commentId);
+      return comment['_id'].toString() != commentId;
     });
+    user.liked_comments = res;
     await user.save();
     return user;
   }
@@ -130,8 +134,23 @@ export class UserService {
     userId: string,
   ): Promise<UserDocument> {
     const user = await this.findById(userId);
-    user.comments = user.comments.filter((comment) => {
-      comment['id'] != commentId;
+    const res = user.comments.filter((comment) => {
+      console.log(comment['_id'].toString() + '   ' + commentId);
+      console.log(comment['_id'].toString() != commentId);
+      return comment['_id'].toString() != commentId;
+    });
+    user.comments = res;
+    await user.save();
+    return user;
+  }
+
+  async deleteTopicFromUser(
+    userId: string,
+    topicId: string,
+  ): Promise<UserDocument> {
+    const user = await this.findById(userId);
+    user.topics = user.topics.filter((topic) => {
+      topic['_id'].toString() != topicId;
     });
     await user.save();
     return user;
