@@ -83,7 +83,6 @@ export class CommentService {
   //find comment by id
   async findById(id: string): Promise<CommentDocument> {
     try {
-      console.log('aaaa: ' + id);
       const comment = await this.commentModel
         .findOne({ _id: id })
         .populate('owner')
@@ -104,7 +103,6 @@ export class CommentService {
     const comment = await this.findById(id);
     const user = await this.userService.findById(comment.owner['_id']);
     // if user already liked the comment
-    console.log(comment.liked_by);
     if (comment.liked_by.find((liker) => liker['_id'] == user.id)) {
       return comment;
     }
@@ -158,8 +156,6 @@ export class CommentService {
       const comment = await this.findById(id);
       const liked_by = comment.liked_by;
       for await (const user of liked_by) {
-        console.log(user['id']);
-        console.log(comment.id);
         await this.userService.deleteCommentFromLikedComments(
           comment['_id'].toString(),
           user['_id'].toString(),

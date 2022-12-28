@@ -16,7 +16,6 @@ export class UserController {
   @UseGuards(AccessTokenGuard)
   @Get()
   getUser(@Req() req: Request) {
-    console.log(req);
     return req.user;
   }
 

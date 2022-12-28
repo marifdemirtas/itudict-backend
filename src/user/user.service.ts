@@ -103,6 +103,7 @@ export class UserService {
     const count = await this.userModel.countDocuments();
     const users = await this.userModel
       .find({
+        banned: false,
         role: { $ne: 'admin' },
         username: { $regex: '.*' + key + '.*', $options: 'i' },
       })
@@ -119,8 +120,6 @@ export class UserService {
   ): Promise<UserDocument> {
     const user = await this.findById(userId);
     const res = user.liked_comments.filter((comment) => {
-      console.log(comment['_id'].toString() + '   ' + commentId);
-      console.log(comment['_id'].toString() != commentId);
       return comment['_id'].toString() != commentId;
     });
     user.liked_comments = res;
@@ -135,8 +134,6 @@ export class UserService {
   ): Promise<UserDocument> {
     const user = await this.findById(userId);
     const res = user.comments.filter((comment) => {
-      console.log(comment['_id'].toString() + '   ' + commentId);
-      console.log(comment['_id'].toString() != commentId);
       return comment['_id'].toString() != commentId;
     });
     user.comments = res;
