@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { forwardRef, Inject, Injectable } from '@nestjs/common';
 import { Comment, CommentDocument } from './schemas/comment.schema';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
@@ -12,6 +12,7 @@ import { UserDocument } from 'src/user/schemas/user.schema';
 export class CommentService {
   constructor(
     @InjectModel(Comment.name) private commentModel: Model<CommentDocument>,
+    @Inject(forwardRef(() => TopicService))
     private topicService: TopicService,
     private userService: UserService,
   ) {}
@@ -81,13 +82,18 @@ export class CommentService {
 
   //find comment by id
   async findById(id: string): Promise<CommentDocument> {
-    const comment = await this.commentModel
-      .findOne({ _id: id })
-      .populate('owner')
-      .populate('liked_by')
-      .populate('disliked_by')
-      .exec();
-    return comment;
+    try {
+      console.log('aaaa: ' + id);
+      const comment = await this.commentModel
+        .findOne({ _id: id })
+        .populate('owner')
+        .populate('liked_by')
+        .populate('disliked_by')
+        .exec();
+      return comment;
+    } catch (error) {
+      console.log(error);
+    }
   }
 
   //like comment
@@ -111,7 +117,7 @@ export class CommentService {
     }
     comment.likes = comment.likes + 1;
     comment.liked_by.push(user);
-    await comment.save();
+    await comment.save(); // save user first
     user.liked_comments.push(comment);
     await user.save();
     return comment;
@@ -155,18 +161,18 @@ export class CommentService {
         console.log(user['id']);
         console.log(comment.id);
         await this.userService.deleteCommentFromLikedComments(
-          comment['id'],
-          user['id'],
+          comment['_id'].toString(),
+          user['_id'].toString(),
         );
       }
       await this.userService.deleteCommentFromUserComments(
-        comment['id'],
-        comment.owner['id'],
+        comment['_id'].toString(),
+        comment.owner['_id'].toString(),
       );
       // delete comment from topic with given commnt and topic id
       await this.topicService.deleteCommentFromTopic(
-        comment['id'],
-        comment.topicId,
+        comment['_id'].toString(),
+        comment.topicId.toString(),
       );
 
       // delete comment

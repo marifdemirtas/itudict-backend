@@ -1,6 +1,14 @@
 //topic controller
 //
-import { Controller, Post, Body, Req, Get } from '@nestjs/common';
+import {
+  Controller,
+  Post,
+  Body,
+  Req,
+  Get,
+  Delete,
+  Query,
+} from '@nestjs/common';
 import { TopicService } from './topic.service';
 import { CreateTopicDto } from './dto/create-topic.dto';
 import { UserService } from 'src/user/user.service';
@@ -68,6 +76,29 @@ export class TopicController {
       const page = parseInt(req.params.page);
       const limit = parseInt(req.params.limit);
       return await this.topicService.getPaginatedTopics(page, limit);
+    } catch (error) {
+      console.log(error);
+    }
+  }
+
+  //get paginated topics for admin
+  @UseGuards(RoleGuard(Role.Admin))
+  @UseGuards(AccessTokenGuard)
+  @Get('filter/:page/:limit')
+  async filterPaginatedTopics(@Req() req: Request, @Query() query) {
+    const key = query.key;
+    const page = parseInt(req.params.page);
+    const limit = parseInt(req.params.limit);
+    return await this.topicService.filterPaginatedTopics(page, limit, key);
+  }
+
+  @UseGuards(AccessTokenGuard)
+  @Delete('delete/:id')
+  async deleteTopic(@Req() req: Request) {
+    try {
+      const id = req.params.id;
+      await this.topicService.deleteTopic(id);
+      return { message: 'Topic deleted' };
     } catch (error) {
       console.log(error);
     }
