@@ -99,8 +99,9 @@ export class UserService {
     page: number,
     limit: number,
     key: string,
-  ): Promise<User[]> {
-    return this.userModel
+  ): Promise<any> {
+    const count = await this.userModel.countDocuments();
+    const users = this.userModel
       .find({
         role: { $ne: 'admin' },
         username: { $regex: '.*' + key + '.*', $options: 'i' },
@@ -108,6 +109,7 @@ export class UserService {
       .skip((page - 1) * limit)
       .limit(limit)
       .exec();
+    return { count, users };
   }
 
   // delete comment from liked comments with given comment and user id
