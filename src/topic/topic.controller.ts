@@ -92,21 +92,12 @@ export class TopicController {
     return await this.topicService.filterPaginatedTopics(page, limit, key);
   }
 
-  //delete topic
   @UseGuards(AccessTokenGuard)
   @Delete('delete/:id')
   async deleteTopic(@Req() req: Request) {
     try {
       const id = req.params.id;
-      const email = req.user['email'];
-      const user = await this.userService.findByEmail(email);
-      const topic = await this.topicService.findById(id);
-      if (topic['owner'] != user['_id'])
-        throw new HttpException('Permission denied', HttpStatus.FORBIDDEN);
-      // delete comments of topic
-      // delete topic of user
-      // delete topic
-      //await this.topicService.deleteTopic(id);
+      await this.topicService.deleteTopic(id);
       return { message: 'Topic deleted' };
     } catch (error) {
       console.log(error);

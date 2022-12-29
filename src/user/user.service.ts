@@ -1,16 +1,10 @@
 import { Injectable } from '@nestjs/common';
-import { LoginUserDto } from './dto/login-user.dto';
 import { CreateUserDto } from './dto/create-user.dto';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { User, UserDocument } from './schemas/user.schema';
-import { forwardRef } from '@nestjs/common';
-import { Inject } from '@nestjs/common';
-import * as bcyrpt from 'bcrypt';
-import { DocumentType } from '@typegoose/typegoose';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { Role } from './interfaces/role.interface';
-import internal from 'stream';
 
 @Injectable()
 export class UserService {
@@ -18,7 +12,6 @@ export class UserService {
 
   async create(createUserDto: CreateUserDto): Promise<UserDocument> {
     const createdUser = new this.userModel(createUserDto);
-    const a = createdUser._id;
     createdUser.role = Role.junior;
     createdUser.comments = [];
     createdUser.topics = [];
@@ -34,7 +27,7 @@ export class UserService {
 
   async findAll(): Promise<User[]> {
     return this.userModel
-      .find({ banned: false, role: { $ne: 'admin' } })
+      .find({ banned: false, role: { $ne: 'Admin' } })
       .exec();
   }
 
@@ -98,15 +91,24 @@ export class UserService {
     page: number,
     limit: number,
     key: string,
-  ): Promise<User[]> {
-    return this.userModel
+  ): Promise<any> {
+    const count = await this.userModel
       .find({
-        role: { $ne: 'admin' },
+        banned: false,
+        role: { $ne: 'Admin' },
+        username: { $regex: '.*' + key + '.*', $options: 'i' },
+      })
+      .countDocuments();
+    const users = await this.userModel
+      .find({
+        banned: false,
+        role: { $ne: 'Admin' },
         username: { $regex: '.*' + key + '.*', $options: 'i' },
       })
       .skip((page - 1) * limit)
       .limit(limit)
       .exec();
+    return { count, users };
   }
 
   // delete comment from liked comments with given comment and user id
@@ -115,11 +117,10 @@ export class UserService {
     userId: string,
   ): Promise<UserDocument> {
     const user = await this.findById(userId);
-    user.liked_comments = user.liked_comments.filter((comment) => {
-      console.log(comment['id']);
-      console.log(commentId);
-      comment['id'] != commentId;
+    const res = user.liked_comments.filter((comment) => {
+      return comment['_id'].toString() != commentId;
     });
+    user.liked_comments = res;
     await user.save();
     return user;
   }
@@ -130,8 +131,21 @@ export class UserService {
     userId: string,
   ): Promise<UserDocument> {
     const user = await this.findById(userId);
-    user.comments = user.comments.filter((comment) => {
-      comment['id'] != commentId;
+    const res = user.comments.filter((comment) => {
+      return comment['_id'].toString() != commentId;
+    });
+    user.comments = res;
+    await user.save();
+    return user;
+  }
+
+  async deleteTopicFromUser(
+    userId: string,
+    topicId: string,
+  ): Promise<UserDocument> {
+    const user = await this.findById(userId);
+    user.topics = user.topics.filter((topic) => {
+      topic['_id'].toString() != topicId;
     });
     await user.save();
     return user;

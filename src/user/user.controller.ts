@@ -2,12 +2,12 @@ import { Controller, Post, Body, Get } from '@nestjs/common';
 import { LoginUserDto } from './dto/login-user.dto';
 import { UserService } from './user.service';
 import { UseGuards } from '@nestjs/common';
-import { AccessTokenGuard } from 'src/common/guards/access-token.guard';
+import { AccessTokenGuard } from '../common/guards/access-token.guard';
 import { Req } from '@nestjs/common';
 import { Request } from 'express';
 import { Query } from '@nestjs/common';
-import RoleGuard from 'src/common/guards/role.guard';
-import { Role } from 'src/common/enum/role.enum';
+import RoleGuard from '../common/guards/role.guard';
+import { Role } from '../common/enum/role.enum';
 
 @Controller('user')
 export class UserController {
@@ -16,7 +16,6 @@ export class UserController {
   @UseGuards(AccessTokenGuard)
   @Get()
   getUser(@Req() req: Request) {
-    console.log(req);
     return req.user;
   }
 
@@ -33,7 +32,7 @@ export class UserController {
     const email_ = req.user['email'];
     const user = await this.userService.findByEmail(email_);
     if (user) {
-      if (user.role === 'admin') {
+      if (user.role === Role.Admin) {
         return this.userService.banUser(query.email);
       } else {
         throw new Error('User not authorized');
@@ -47,8 +46,9 @@ export class UserController {
   async promoteUser(@Req() req: Request, @Query() query) {
     const email_ = req.user['email'];
     const user = await this.userService.findByEmail(email_);
+    console.log(user);
     if (user) {
-      if (user.role === 'admin') {
+      if (user.role === Role.Admin) {
         return this.userService.promoteUser(query.email);
       } else {
         throw new Error('User not authorized');
@@ -63,7 +63,7 @@ export class UserController {
     const email_ = req.user['email'];
     const user = await this.userService.findByEmail(email_);
     if (user) {
-      if (user.role === 'admin') {
+      if (user.role === Role.Admin) {
         return this.userService.demoteUser(query.email);
       } else {
         throw new Error('User not authorized');

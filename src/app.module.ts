@@ -6,15 +6,23 @@ import { UserModule } from './user/user.module';
 import { AuthModule } from './auth/auth.module';
 import { CommentModule } from './comment/comment.module';
 import { TopicModule } from './topic/topic.module';
+import { ThrottlerModule } from '@nestjs/throttler';
 
 @Module({
   imports: [
-    ConfigModule.forRoot({ isGlobal: true }),
+    ConfigModule.forRoot({ 
+      isGlobal: true,
+      envFilePath: "/env/credentials.env"
+    }),
     MongooseModule.forRoot(process.env.MONGO_URI),
     UserModule,
     AuthModule,
     CommentModule,
     TopicModule,
+    ThrottlerModule.forRoot({
+      ttl: 10,
+      limit: 10,
+    }),
   ],
 })
 export class AppModule implements NestModule {
