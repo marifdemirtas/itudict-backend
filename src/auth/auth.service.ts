@@ -25,25 +25,31 @@ export class AuthService {
   async signUp(createUserDto: CreateUserDto): Promise<any> {
     // Check if user exists
     //hash password here then send to user service
-    const userExists = await this.userService.findByEmail(createUserDto.email);
-    if (userExists) {
-      throw new BadRequestException('User already exists');
-    }
+    try {
+      const userExists = await this.userService.findByEmail(
+        createUserDto.email,
+      );
+      if (userExists) {
+        throw new BadRequestException('User already exists');
+      }
 
-    // hash password
-    const hash = bcyrpt.hashSync(createUserDto.password, 10);
-    const newUser = await this.userService.create({
-      ...createUserDto,
-      password: hash,
-    });
-    const tokens = await this.getTokens(
-      newUser._id,
-      newUser.email,
-      newUser.role,
-      newUser.banned,
-    );
-    await this.updateRefreshToken(newUser._id, tokens.refreshToken);
-    return { ...tokens, role: newUser.role };
+      // hash password
+      const hash = bcyrpt.hashSync(createUserDto.password, 10);
+      const newUser = await this.userService.create({
+        ...createUserDto,
+        password: hash,
+      });
+      const tokens = await this.getTokens(
+        newUser._id,
+        newUser.email,
+        newUser.role,
+        newUser.banned,
+      );
+      await this.updateRefreshToken(newUser._id, tokens.refreshToken);
+      return { ...tokens, role: newUser.role };
+    } catch (e) {
+      throw e;
+    }
   }
 
   async signIn(data: AuthDto) {

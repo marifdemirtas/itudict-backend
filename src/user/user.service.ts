@@ -10,13 +10,36 @@ import { Role } from './interfaces/role.interface';
 export class UserService {
   constructor(@InjectModel(User.name) private userModel: Model<UserDocument>) {}
 
+  checkITUMailRegex(email: string): boolean {
+    const ituMailRegex = new RegExp('^[a-zA-Z0-9_.+-]+@itu.edu.tr$', 'i');
+    return ituMailRegex.test(email);
+  }
+
   async create(createUserDto: CreateUserDto): Promise<UserDocument> {
-    const createdUser = new this.userModel(createUserDto);
-    createdUser.role = Role.junior;
-    createdUser.comments = [];
-    createdUser.topics = [];
-    createdUser.save();
-    return createdUser;
+    try {
+      if (
+        createUserDto?.email === null ||
+        createUserDto?.password === null ||
+        createUserDto?.username === null ||
+        createUserDto?.passwordConfirm === null ||
+        createUserDto?.password !== createUserDto?.passwordConfirm ||
+        createUserDto?.username.length < 2 ||
+        createUserDto?.password.length < 6
+      ) {
+        throw new Error('Invalid user information');
+      }
+      if (!this.checkITUMailRegex(createUserDto?.email)) {
+        throw new Error('Email is not ITU email');
+      }
+      const createdUser = new this.userModel(createUserDto);
+      createdUser.role = Role.junior;
+      createdUser.comments = [];
+      createdUser.topics = [];
+      createdUser.save();
+      return createdUser;
+    } catch (e) {
+      throw e;
+    }
   }
 
   async findByEmail(email: string): Promise<UserDocument> {
