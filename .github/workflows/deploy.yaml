@@ -1,0 +1,49 @@
+name: Deploy to ECR
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+    - name: Build and push image to ECR
+      env:
+        AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+        AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        AWS_DEFAULT_REGION: us-east-1
+      run: |
+        # Build the Docker image
+        docker build -t itudict-be:latest .
+
+        # Log in to Amazon ECR
+        aws ecr get-login-password --region $AWS_DEFAULT_REGION | \
+        docker login --username AWS \
+        --password-stdin ${{ secrets.AWS_REPOSITORY_URL }}
+
+        # Push the image to ECR
+        docker tag itudict-be:latest ${{ secrets.AWS_REPOSITORY_URL }}/itudict:latest
+        docker push ${{ secrets.AWS_REPOSITORY_URL }}/itudict:latest
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+    - name: Deploy to ECS
+      env:
+        AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+        AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        AWS_DEFAULT_REGION: us-east-1
+        APP_VERSION: 2
+      run: |
+        # Update the ECS task definition with the new image
+        aws elasticbeanstalk create-application-version \
+        --application-name "ITUDict-BE" --version-label $APP_VERSION \
+        --source-bundle S3Bucket=itudict-be-deploy,S3Key=Dockerrun.aws.json
+
+        aws elasticbeanstalk update-environment \
+        --application-name "ITUDict-BE" \
+        --environment-name "your-web-app-production" \
+        --version-label=$APP_VERSION
