@@ -5,6 +5,7 @@ import { Model } from 'mongoose';
 import { User, UserDocument } from './schemas/user.schema';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { Role } from './interfaces/role.interface';
+import { WrongItuEmail } from '../common/exceptions/itu-email.exception';
 
 @Injectable()
 export class UserService {
@@ -29,7 +30,7 @@ export class UserService {
         throw new Error('Invalid user information');
       }
       if (!this.checkITUMailRegex(createUserDto?.email)) {
-        throw new Error('Email is not ITU email');
+        throw new WrongItuEmail();
       }
       const createdUser = new this.userModel(createUserDto);
       createdUser.role = Role.junior;
