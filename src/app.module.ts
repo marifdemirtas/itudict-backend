@@ -10,19 +10,19 @@ import { ThrottlerModule } from '@nestjs/throttler';
 
 @Module({
   imports: [
-    ConfigModule.forRoot({ 
+    ConfigModule.forRoot({
       isGlobal: true,
-      envFilePath: "/env/credentials.env"
+      envFilePath: '/env/credentials.env',
     }),
     MongooseModule.forRoot(process.env.MONGO_URI),
     UserModule,
     AuthModule,
     CommentModule,
     TopicModule,
-    ThrottlerModule.forRoot({
-      ttl: 10,
-      limit: 10,
-    }),
+    // ThrottlerModule.forRoot({
+    //   ttl: 10,
+    //   limit: 10,
+    // }),
   ],
 })
 export class AppModule implements NestModule {

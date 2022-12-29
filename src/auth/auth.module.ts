@@ -17,10 +17,10 @@ import { ThrottlerGuard } from '@nestjs/throttler';
     AuthService,
     AccessTokenStrategy,
     RefreshTokenStrategy,
-    {
-      provide: APP_GUARD,
-      useClass: ThrottlerGuard,
-    },
+    // {
+    //   provide: APP_GUARD,
+    //   useClass: ThrottlerGuard,
+    // },
   ],
   exports: [AuthService],
 })

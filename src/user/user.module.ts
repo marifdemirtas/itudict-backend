@@ -14,10 +14,10 @@ import { ThrottlerGuard } from '@nestjs/throttler';
   controllers: [UserController],
   providers: [
     UserService,
-    {
-      provide: APP_GUARD,
-      useClass: ThrottlerGuard,
-    },
+    // {
+    //   provide: APP_GUARD,
+    //   useClass: ThrottlerGuard,
+    // },
   ],
   exports: [UserService],
 })

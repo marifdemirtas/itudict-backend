@@ -17,10 +17,10 @@ import { ThrottlerGuard } from '@nestjs/throttler';
   controllers: [CommentController],
   providers: [
     CommentService,
-    {
-      provide: APP_GUARD,
-      useClass: ThrottlerGuard,
-    },
+    // {
+    //   provide: APP_GUARD,
+    //   useClass: ThrottlerGuard,
+    // },
   ],
   exports: [CommentService],
 })
