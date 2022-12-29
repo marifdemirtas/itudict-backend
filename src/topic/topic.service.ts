@@ -5,10 +5,10 @@ import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { Topic, TopicDocument } from './schemas/topic.schema';
 import { CreateTopicDto } from './dto/create-topic.dto';
-import { Comment } from 'src/comment/schemas/comment.schema';
-import { User } from 'src/user/schemas/user.schema';
-import { CommentService } from 'src/comment/comment.service';
-import { UserService } from 'src/user/user.service';
+import { Comment } from '../comment/schemas/comment.schema';
+import { User } from '../user/schemas/user.schema';
+import { CommentService } from '../comment/comment.service';
+import { UserService } from '../user/user.service';
 
 @Injectable()
 export class TopicService {
