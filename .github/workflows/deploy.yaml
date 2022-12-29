@@ -36,14 +36,13 @@ jobs:
         AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
         AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
         AWS_DEFAULT_REGION: us-east-1
-        APP_VERSION: 2
+        APP_VERSION: 1
       run: |
-        # Update the ECS task definition with the new image
         aws elasticbeanstalk create-application-version \
-        --application-name "ITUDict-BE" --version-label $APP_VERSION \
-        --source-bundle S3Bucket=itudict-be-deploy,S3Key=Dockerrun.aws.json
+        --application-name "itudict-backend" --version-label $APP_VERSION \
+        --source-bundle S3Bucket=itudict-be-deploy,S3Key=app-v1.zip
 
         aws elasticbeanstalk update-environment \
-        --application-name "ITUDict-BE" \
-        --environment-name "your-web-app-production" \
+        --application-name "itudict-backend" \
+        --environment-name "itudictbackend-env" \
         --version-label=$APP_VERSION
