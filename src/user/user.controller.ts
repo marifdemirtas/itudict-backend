@@ -8,10 +8,16 @@ import { Request } from 'express';
 import { Query } from '@nestjs/common';
 import RoleGuard from '../common/guards/role.guard';
 import { Role } from '../common/enum/role.enum';
+import { CreateUserDto } from './dto/create-user.dto';
 
 @Controller('user')
 export class UserController {
   constructor(private readonly userService: UserService) {}
+
+  @Post('create')
+  create(@Body() createUserDto: CreateUserDto) {
+    return this.userService.create(createUserDto);
+  }
 
   @UseGuards(AccessTokenGuard)
   @Get()

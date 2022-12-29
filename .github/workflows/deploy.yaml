@@ -45,4 +45,4 @@ jobs:
         aws elasticbeanstalk update-environment \
         --application-name "itudict-backend" \
         --environment-name "itudictbackend-env" \
-        --version-label=$APP_VERSION
+        --version-label="$APP_VERSION"_"$GITHUB_RUN_NUMBER"

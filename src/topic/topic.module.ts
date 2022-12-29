@@ -19,10 +19,10 @@ import { ThrottlerGuard } from '@nestjs/throttler';
   controllers: [TopicController],
   providers: [
     TopicService,
-    {
-      provide: APP_GUARD,
-      useClass: ThrottlerGuard,
-    },
+    // {
+    //   provide: APP_GUARD,
+    //   useClass: ThrottlerGuard,
+    // },
   ],
   exports: [TopicService],
 })

@@ -13,7 +13,7 @@ import { CommentService } from './comment.service';
 import { CreateCommentDto } from './dto/create-comment.dto';
 import { AccessTokenGuard } from '../common/guards/access-token.guard';
 import { HttpException } from '@nestjs/common';
-import { UserService } from 'src/user/user.service';
+import { UserService } from '../user/user.service';
 
 @Controller('comment')
 export class CommentController {
