@@ -39,7 +39,7 @@ jobs:
         APP_VERSION: 2
       run: |
         aws elasticbeanstalk create-application-version \
-        --application-name "itudict-backend" --version-label $APP_VERSION \
+        --application-name "itudict-backend" --version-label "$APP_VERSION"_"$GITHUB_RUN_NUMBER" \
         --source-bundle S3Bucket=itudict-be-deploy,S3Key=app-v1.zip
 
         aws elasticbeanstalk update-environment \
