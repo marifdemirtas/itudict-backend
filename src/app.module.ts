@@ -12,6 +12,7 @@ import { ThrottlerModule } from '@nestjs/throttler';
   imports: [
     ConfigModule.forRoot({
       isGlobal: true,
+      envFilePath: ['/env/credentials.env', '.env'],
     }),
     MongooseModule.forRoot(process.env.MONGO_URI),
     UserModule,
