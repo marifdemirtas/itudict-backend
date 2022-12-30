@@ -18,18 +18,26 @@ export class CommentService {
   ) {}
   //create comment
   async createComment(createCommentDto: CreateCommentDto, user: User) {
-    const topicTitle = createCommentDto.title;
-    const topic = await this.topicService.findById(createCommentDto.topicId);
-    if (topicTitle != topic.title)
-      throw new Error('Topic title does not match');
+    try {
+      const commentCopy = { ...createCommentDto };
+      const content = commentCopy.content;
+      if (!content.replace(/\s/g, '').length)
+        throw new Error('Content can not be all white spaces');
+      const topicTitle = createCommentDto.title;
+      const topic = await this.topicService.findById(createCommentDto.topicId);
+      if (topicTitle != topic.title)
+        throw new Error('Topic title does not match');
 
-    const createdComment = new this.commentModel(createCommentDto);
-    createdComment.owner = user;
-    await createdComment.save();
-    topic.comments.push(createdComment);
-    topic.comment_count = topic.comment_count + 1;
-    await topic.save();
-    return createdComment;
+      const createdComment = new this.commentModel(createCommentDto);
+      createdComment.owner = user;
+      await createdComment.save();
+      topic.comments.push(createdComment);
+      topic.comment_count = topic.comment_count + 1;
+      await topic.save();
+      return createdComment;
+    } catch (error) {
+      throw new Error(error);
+    }
   }
 
   //get all comments

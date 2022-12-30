@@ -91,5 +91,35 @@ describe('CommentController', () => {
       );
       expect(createdComment.content).toBe(CommentDtoStub().content);
     });
+
+    it('should throw error if content is null', async () => {
+      const createdUser = await userService.create(UserDtoStub());
+      const createdTopic = await topicService.createTopic(
+        TopicDtoStub(),
+        createdUser,
+      );
+      const newComment = CommentDtoStub();
+      newComment.topicId = createdTopic['_id'].toString();
+      newComment.content = null;
+      await expect(
+        commentService.createComment(newComment, createdUser),
+      ).rejects.toThrow(
+        "TypeError: Cannot read properties of null (reading 'replace')",
+      );
+    });
+
+    it('should throw error if content is only whitespaces', async () => {
+      const createdUser = await userService.create(UserDtoStub());
+      const createdTopic = await topicService.createTopic(
+        TopicDtoStub(),
+        createdUser,
+      );
+      const newComment = CommentDtoStub();
+      newComment.topicId = createdTopic['_id'].toString();
+      newComment.content = '     ';
+      await expect(
+        commentService.createComment(newComment, createdUser),
+      ).rejects.toThrow('Content can not be all white spaces');
+    });
   });
 });
