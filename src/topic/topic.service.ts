@@ -22,10 +22,18 @@ export class TopicService {
 
   //create topic
   async createTopic(createTopicDto: CreateTopicDto, user: User) {
-    const createdTopic = new this.topicModel(createTopicDto);
-    createdTopic.owner = user;
-    await createdTopic.save();
-    return createdTopic;
+    try {
+      const topicCopy = { ...createTopicDto };
+      const title = topicCopy.title;
+      if (!title.replace(/\s/g, '').length)
+        throw new Error('Content can not be all white spaces');
+      const createdTopic = new this.topicModel(createTopicDto);
+      createdTopic.owner = user;
+      await createdTopic.save();
+      return createdTopic;
+    } catch (error) {
+      throw new Error(error);
+    }
   }
 
   //get all topics
