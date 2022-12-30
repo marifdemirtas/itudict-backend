@@ -68,6 +68,35 @@ describe('UserController', () => {
         WrongItuEmail,
       );
     });
+
+    it('should throw error if email is null', async () => {
+      const user = UserDtoStub();
+      user.email = null;
+      await expect(userService.create(user)).rejects.toThrow(
+        'Invalid user information',
+      );
+    });
+    it('should throw error if username is null', async () => {
+      const user = UserDtoStub();
+      user.username = null;
+      await expect(userService.create(user)).rejects.toThrow(
+        'Invalid user information',
+      );
+    });
+    it('should throw error if password is shorter than 6chars', async () => {
+      const user = UserDtoStub();
+      user.password = '12345';
+      await expect(userService.create(user)).rejects.toThrow(
+        'Invalid user information',
+      );
+    });
+    it('should throw error if password is null', async () => {
+      const user = UserDtoStub();
+      user.password = null;
+      await expect(userService.create(user)).rejects.toThrow(
+        'Invalid user information',
+      );
+    });
   });
 });
 
