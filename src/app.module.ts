@@ -7,6 +7,7 @@ import { AuthModule } from './auth/auth.module';
 import { CommentModule } from './comment/comment.module';
 import { TopicModule } from './topic/topic.module';
 import { ThrottlerModule } from '@nestjs/throttler';
+import { AppController } from './app.controller';
 
 @Module({
   imports: [
@@ -23,7 +24,9 @@ import { ThrottlerModule } from '@nestjs/throttler';
     //   ttl: 10,
     //   limit: 10,
     // }),
-  ],
+  ], controllers: [
+    AppController
+  ]
 })
 export class AppModule implements NestModule {
   configure(consumer: MiddlewareConsumer) {
