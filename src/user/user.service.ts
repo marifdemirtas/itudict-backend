@@ -23,7 +23,6 @@ export class UserService {
         createUserDto?.password === null ||
         createUserDto?.username === null ||
         createUserDto?.passwordConfirm === null ||
-        createUserDto?.password !== createUserDto?.passwordConfirm ||
         createUserDto?.username.length < 2 ||
         createUserDto?.password.length < 6
       ) {

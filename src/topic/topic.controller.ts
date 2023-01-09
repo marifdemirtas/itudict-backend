@@ -11,15 +11,15 @@ import {
 } from '@nestjs/common';
 import { TopicService } from './topic.service';
 import { CreateTopicDto } from './dto/create-topic.dto';
-import { UserService } from 'src/user/user.service';
+import { UserService } from '../user/user.service';
 import { Request } from 'express';
 import { HttpException } from '@nestjs/common';
 import { HttpStatus } from '@nestjs/common';
-import { AccessTokenGuard } from 'src/common/guards/access-token.guard';
+import { AccessTokenGuard } from '../common/guards/access-token.guard';
 import { UseGuards } from '@nestjs/common';
 import { Role } from '../common/enum/role.enum';
 import RoleGuard from '../common/guards/role.guard';
-import { BannedGuard } from 'src/common/guards/banned.guard';
+import { BannedGuard } from '../common/guards/banned.guard';
 
 @Controller('topic')
 export class TopicController {

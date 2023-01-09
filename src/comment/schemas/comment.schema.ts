@@ -10,16 +10,16 @@ export type CommentDocument = Comment & Document;
 
 @Schema()
 export class Comment {
-  @Prop()
+  @Prop({ required: true })
   content: string;
 
   @Prop({ type: mongoose.Schema.Types.ObjectId, ref: 'User' })
   owner: User;
 
-  @Prop()
+  @Prop({ required: true })
   topicId: string;
 
-  @Prop()
+  @Prop({ required: true })
   title: string;
 
   @Prop({ required: true, default: Date.now })
